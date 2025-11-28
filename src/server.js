@@ -1,22 +1,24 @@
 const express = require('express');
 require('dotenv').config();
-const cors = require('cors');
+const path = require('path');
+
 const app = express();
-const pelajarRoute = require('./routes/pelajarRoute')
+const pelajarRoute = require('./routes/pelajarRoute');
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
 app.use(express.json());
 
-// prefix
-app.use('/api/pelajar/', pelajarRoute);
-// home url
-app.use('/', (req,res)=>{
-    res.send('SElamat datang ketua!')
-})
+// API
+app.use('/api/pelajar', pelajarRoute);
 
+// Static files React
+app.use(express.static(path.join(__dirname, '..', 'dist')));
 
-// start server
-app.listen(PORT, ()=>{
-    console.log(`server running on ${PORT}`);
-})
+// Fallback — semua request selain API masuk ke React
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on ${PORT}`);
+});
